@@ -6,37 +6,41 @@ from models import StockBasicModel, StockAttrModel
 # end_date=time.strftime("%Y%m%d", time.localtime())
 end_date = '20200416'
 start_date = '20100101'
+while True:
+    flag = False
+    # ts_code_stop = '000001.SZ'
+    res = session.query(StockAttrModel).filter(StockAttrModel.item=='daily_ts_code_stop').first()
+    ts_code_stop = res.value
+    objs = session.query(StockBasicModel).all()
+    for obj in objs:
+        ts_code = obj.ts_code
+        if ts_code == ts_code_stop:
+            flag = True
+        else:
+            if not flag:
+                continue
 
-flag = False
-# ts_code_stop = '000001.SZ'
-res = session.query(StockAttrModel).filter(StockAttrModel.item=='daily_ts_code_stop').first()
-ts_code_stop = res.value
-objs = session.query(StockBasicModel).all()
-for obj in objs:
-    ts_code = obj.ts_code
-    if ts_code == ts_code_stop:
-        flag = True
-    else:
-        if not flag:
-            continue
+        if flag:
+            print time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            print ts_code
+            print ''
+            try:
+                df = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
+                df.to_sql('daily_%s' % ts_code, engine_ts, index=False, if_exists='replace', chunksize=5000)
+                time.sleep(10)
+            except Exception as e:
+                # ts_code_stop = ts_code
+                flag = False
+                res = session.query(StockAttrModel).filter(StockAttrModel.item=='daily_ts_code_stop').first()
+                res.value = ts_code
+                session.commit()
+                print 'daily_ts_code_stop', ts_code
+                print "休眠一小时再继续下载..."
+                time.sleep(3600)
+                break
 
     if flag:
-        print time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        print ts_code
-        print ''
-        try:
-            df = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
-            df.to_sql('daily_%s' % ts_code, engine_ts, index=False, if_exists='replace', chunksize=5000)
-            time.sleep(10)
-        except Exception as e:
-            ts_code_stop = ts_code
-            flag = False
-            res = session.query(StockAttrModel).filter(StockAttrModel.item=='daily_ts_code_stop').first()
-            res.value = ts_code_stop
-            session.commit()
-            print 'ts_code_stop', ts_code_stop
-            print "休眠一小时再继续下载..."
-            time.sleep(3600)
+        break
 
 session.close()
 
