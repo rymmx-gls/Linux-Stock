@@ -22,7 +22,7 @@ class StockAttrModel(Base):
     """
     股票下载控制属性
     """
-    pk = Column(Integer(),primary_key=True)
+    id = Column(Integer(),primary_key=True)
     item = Column(String(35),nullable=True)
     value = Column(String(500),nullable=True)
 

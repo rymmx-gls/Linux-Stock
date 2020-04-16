@@ -1,15 +1,16 @@
 # coding:utf8
 import time
 from settings import pro, engine_ts, session
-from models import StockBasicModel
+from models import StockBasicModel, StockAttrModel
 
 # end_date=time.strftime("%Y%m%d", time.localtime())
 end_date = '20200416'
 start_date = '20100101'
 
 flag = False
-ts_code_stop = '000001.SZ'
-
+# ts_code_stop = '000001.SZ'
+res = session.query(StockAttrModel).filter(StockAttrModel.item=='daily_ts_code_stop').first()
+ts_code_stop = res.value
 objs = session.query(StockBasicModel).all()
 for obj in objs:
     ts_code = obj.ts_code
@@ -29,8 +30,15 @@ for obj in objs:
             time.sleep(10)
         except Exception as e:
             ts_code_stop = ts_code
+            flag = False
+            res = session.query(StockAttrModel).filter(StockAttrModel.item=='daily_ts_code_stop').first()
+            res.value = ts_code_stop
+            session.commit()
             print 'ts_code_stop', ts_code_stop
-            raise e
+            print "休眠一小时再继续下载..."
+            time.sleep(3600)
+
+session.close()
 
 """
 日线行情
