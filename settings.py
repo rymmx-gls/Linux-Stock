@@ -17,5 +17,8 @@ pro = ts.pro_api()
 
 
 
-
-
+# ------ from settings import ... ------ #
+"""
+from settings import pro, engine_ts, session
+"""
+# ------ from settings import ... ------ #
