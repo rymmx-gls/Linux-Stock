@@ -9,10 +9,10 @@ from lib.macd_rymmx import macd
 
 from settings import engine_ts
 
-ts_code = "002480.SZ"
+ts_code = "000008.SZ"
 
 
-sql = "select trade_date,close from `daily_{}` order by trade_date DESC limit 100;".format(ts_code)
+sql = "select trade_date,close from `daily_{}` order by trade_date DESC limit 200;".format(ts_code)
 
 df = pd.read_sql_query(sql=sql, con=engine_ts, index_col=None, coerce_float=True, params=None, parse_dates=None, chunksize=None)
 df = df[::-1]
@@ -90,3 +90,10 @@ plt.show()
 style=['line','line','line','line','line','line','line','line']
 """
 
+"""
+4          0.005620       0.043541      0.049160
+3         -0.013345       0.040204      0.026859
+2         -0.017879       0.035735      0.017856
+1         -0.006708       0.034058      0.027350
+0          0.010546       0.036694      0.047241
+"""
