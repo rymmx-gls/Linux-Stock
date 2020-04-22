@@ -4,7 +4,7 @@ from settings import pro, engine_ts, session
 from models import StockBasicModel, StockAttrModel
 
 # end_date=time.strftime("%Y%m%d", time.localtime())
-end_date = '20200416'
+end_date = '20200422'
 start_date = '20100101'
 while True:
     flag = False
@@ -26,6 +26,7 @@ while True:
             print ''
             try:
                 df = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
+                df = df[::-1]
                 df.to_sql('daily_%s' % ts_code, engine_ts, index=False, if_exists='replace', chunksize=5000)
                 time.sleep(10)
             except Exception as e:
