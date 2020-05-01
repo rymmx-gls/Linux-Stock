@@ -3,6 +3,20 @@ from sqlalchemy import engine, types
 from sqlalchemy.orm import sessionmaker
 import tushare as ts
 
+import pymysql
+conn = pymysql.connect(host='localhost',port=6033, user='root',password='1257',database='stock',charset='utf8')
+cursor = conn.cursor()
+# sql='''
+# INSERT INTO `trade_cal` ( `exchange`, `cal_date`, `is_open`,`pretrade_date`)
+#     SELECT  '000','20200420',1,'20200417'
+#     WHERE not exists (select `cal_date` from `trade_cal` where `cal_date` = '20200426')
+# '''
+# cursor.execute(sql)
+# # 关闭光标对象
+# cursor.close()
+# # 关闭数据库连接
+# conn.close()
+
 
 # import pymysql; pymysql.install_as_MySQLdb()
 # db_connect_string="mysql://root:1257@localhost:6033/stock?charset=utf8"

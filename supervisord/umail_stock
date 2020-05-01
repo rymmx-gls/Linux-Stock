@@ -1,0 +1,96 @@
+#!/bin/sh
+#
+# umail_app program
+# chkconfig: 345 86 31
+# description: umail_app is a essential part of U-Mail
+
+PYTHON_BIN="/usr/local/u-mail/app/engine/bin/python"
+SUPERVISOR_SERVER="/usr/local/u-mail/app/engine/bin/supervisord"
+SUPERVISOR_CLIENT="/usr/local/u-mail/app/engine/bin/supervisorctl"
+SUPERVISOR_CONFIG="/root/PycharmProjects/stock/supervisord/supervisord.ini"
+SUPERVISOR_PID="/root/PycharmProjects/stock/supervisord/supervisord.pid"
+
+###########################################################
+# Start operate
+
+start_supervisor() {
+    echo "$PYTHON_BIN $SUPERVISOR_SERVER --configuration $SUPERVISOR_CONFIG"
+    if [ -f $SUPERVISOR_PID ]; then
+        stop_supervisor
+    fi
+    mkdir -p /root/PycharmProjects/stock/log
+
+    $PYTHON_BIN $SUPERVISOR_SERVER --configuration $SUPERVISOR_CONFIG
+    return $?
+}
+
+###########################################################
+# Stop operate
+
+stop_supervisor() {
+
+    # check supervisor already stop
+    if [ ! -f $SUPERVISOR_PID ]; then
+        return 0 ;
+    fi
+    PID=`cat $SUPERVISOR_PID` ;
+    if ! ps ax | grep supervisord | grep -v 'grep' | grep $PID &> /dev/null; then
+        return 0 ;
+    fi
+
+    # stop supervisor
+    $SUPERVISOR_CLIENT -c $SUPERVISOR_CONFIG stop all
+    kill `cat $SUPERVISOR_PID` > /dev/null 2>&1
+    for t in 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 5 10 10 15
+    do
+        if [ -f $SUPERVISOR_PID ]; then
+            kill `cat $SUPERVISOR_PID` &> /dev/null;
+            echo "wait stock stopped"
+            sleep $t
+            continue
+        else
+            echo "stock stop success"
+            return 0
+        fi
+    done
+}
+
+status_supervisor(){
+    if [ ! -f $SUPERVISOR_PID ]; then
+        echo "stopped"
+        return 1
+    fi
+    echo "$SUPERVISOR_CLIENT --configuration $SUPERVISOR_CONFIG status"
+    ${SUPERVISOR_CLIENT} --configuration ${SUPERVISOR_CONFIG} status
+    return $?
+}
+
+###########################################################
+# call program
+
+_RET_VAL=0
+case "$1" in
+    "start")
+        start_supervisor
+        _RET_VAL=$? ;
+        ;;
+    "stop")
+        stop_supervisor
+        _RET_VAL=$? ;
+        ;;
+    "status")
+        status_supervisor
+        _RET_VAL=$? ;
+        ;;
+    "restart")
+        stop_supervisor
+        start_supervisor
+        _RET_VAL=$? ;
+        ;;
+    *)
+        echo "Usage: $basename {start|stop|status|restart}" ;
+        _RET_VAL=1
+        ;;
+esac
+
+exit $_RET_VAL
