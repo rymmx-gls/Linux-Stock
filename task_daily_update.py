@@ -2,7 +2,7 @@
 import time, datetime
 from models import StockBasicModel, StockAttrModel
 from settings import cursor, conn, pro, session, engine_ts
-from lib.Common import build_insert_sql, outinfo
+from lib.Common import build_insert_sql, outinfo, outerror
 import pandas as pd
 
 
@@ -63,6 +63,8 @@ def start():
                                     cursor.execute(*build_insert_sql(tbname, df_dict))
                                     conn.commit()
                                 time.sleep(5)
+                            else:
+                                outerror(u"股票:%s(日期:%s)存在缺失"%(ts_code, end_date))
                         except Exception as e:
                             # ts_code_stop = ts_code
                             flag = False
