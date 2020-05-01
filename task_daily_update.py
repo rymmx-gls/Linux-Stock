@@ -62,7 +62,7 @@ def start():
                                     tbname = "daily_" + ts_code
                                     cursor.execute(*build_insert_sql(tbname, df_dict))
                                     conn.commit()
-                                time.sleep(5)
+                                time.sleep(0.5)
                             else:
                                 outerror(u"股票:%s(日期:%s)存在缺失"%(ts_code, end_date))
                         except Exception as e:
@@ -72,9 +72,9 @@ def start():
                                 StockAttrModel.item == 'daily_update_ts_code_stop').first()
                             res.value = ts_code
                             session.commit()
-                            outinfo('daily_update_ts_code_stop: %s'%ts_code)
-                            outinfo("休眠十分钟再继续下载...")
-                            time.sleep(600)
+                            outinfo('daily_update_ts_code_stop: %s at date:%s'%(ts_code, end_date))
+                            outinfo(u"休眠一分钟再继续下载...")
+                            time.sleep(60)
                             break
 
                 if flag:
@@ -91,7 +91,7 @@ def start():
 
 if __name__ == '__main__':
     interval = 60 * 60 * 24
-    DEFINITE_TIME = "17:38:00"
+    DEFINITE_TIME = "20:00:00"
 
     while True:
         now_time = datetime.datetime.now().strftime('%H:%M:%S')
