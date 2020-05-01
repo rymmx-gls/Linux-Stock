@@ -52,8 +52,7 @@ def start():
 
                     if flag:
                         outinfo(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-                        outinfo(ts_code)
-                        outinfo('')
+                        outinfo("%s %s" % (ts_code, end_date))
                         try:
                             df = pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
                             if not df.empty:
@@ -62,6 +61,9 @@ def start():
                                     tbname = "daily_" + ts_code
                                     cursor.execute(*build_insert_sql(tbname, df_dict))
                                     conn.commit()
+                                    outinfo("insert %s success at %s" % (ts_code, end_date))
+                                else:
+                                    outinfo("%s at %s already exist" % (ts_code, end_date))
                                 time.sleep(0.5)
                             else:
                                 outerror(u"股票:%s(日期:%s)存在缺失"%(ts_code, end_date))
