@@ -14,7 +14,7 @@ from CommonDefines import *
 MAILBOX_ROOT = None
 CUSTOM_CONF_PATH = '/usr/local/u-mail/config/custom.conf'
 SERVICE_CONF_DIR = '/usr/local/u-mail/config'
-APP_ROOT = '/root/PycharmProjects/stock'
+APP_ROOT = '/root/src/Linux-Stock'
 APP_LOG_PATH = os.path.join(APP_ROOT, 'log')
 APP_RUN_PATH = os.path.join(APP_ROOT, 'run')
 APP_TPL_PATH = os.path.join(APP_ROOT, 'tpl')

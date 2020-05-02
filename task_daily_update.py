@@ -93,7 +93,7 @@ def start():
 
 if __name__ == '__main__':
     interval = 60 * 60 * 24
-    DEFINITE_TIME = "20:00:00"
+    DEFINITE_TIME = "23:50:00"
 
     while True:
         now_time = datetime.datetime.now().strftime('%H:%M:%S')
