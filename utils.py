@@ -45,10 +45,45 @@ def time_controller(func=object):
         time.sleep(sleep_time + 1)
 
 
-if __name__ == '__main__':
-    def hello():
-        import time
-        print "hello world"
-        time.sleep(5)
+def email_to_me(text=""):
+    """给我发送邮件"""
+    from email.header import Header
+    from email.mime.text import MIMEText
+    from email.utils import parseaddr, formataddr
+    import smtplib
+    from lib.Common import outinfo
 
-    time_controller(hello)
+    def _format_addr(s):
+        name, addr = parseaddr(s)
+        return formataddr((Header(name, 'utf-8').encode(),
+                           addr.encode('utf-8') if isinstance(addr, unicode) else addr))
+
+    from_addr = 'rymmx520@163.com'
+    password = 'LVYDYBYGKMPEZLJH'
+    to_addr = 'rymmx520@163.com'
+    smtp_server = 'smtp.163.com'
+
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['From'] = _format_addr(u'rymmx520 <%s>' % from_addr)
+    msg['To'] = _format_addr(u'rymmx520 <%s>' % to_addr)
+    msg['Subject'] = Header(u'Linux-Stock', 'utf-8').encode()
+
+    server = smtplib.SMTP(smtp_server, 25)
+    # server.set_debuglevel(1)
+    outinfo('开始邮件发送:%s' % text)
+    server.login(from_addr, password)
+    server.sendmail(from_addr, [to_addr], msg.as_string())
+    server.quit()
+    outinfo('邮件发送成功:%s' % text)
+
+
+if __name__ == '__main__':
+    email_to_me(text="买入: 000001.SZ(平安银行)")
+
+# if __name__ == '__main__':
+#     def hello():
+#         import time
+#         print "hello world"
+#         time.sleep(5)
+#
+#     time_controller(hello)
