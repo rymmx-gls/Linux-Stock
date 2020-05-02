@@ -8,7 +8,7 @@ from lib.macd_rymmx import macd
 
 
 from settings import engine_ts
-from test_email import email_to_me
+from utils_rymmx import email_to_me
 
 ts_code = "000001.SZ"
 
