@@ -13,6 +13,8 @@
 # U-MAIL keep_service_running
 # */5 * * * * root /usr/local/u-mail/app/sbin/keep_service_running
 
+# task_trade_cal_update.py 交易日日历 每天 01:00:00
+* 1 * * * /root/anaconda2/bin/python /root/src/Linux-Stock/task_trade_cal_update.py
 
 # task_daily_update.py 交易日每天15点～16点之间(每天16:00:00)
 * 16 * * * /root/anaconda2/bin/python /root/src/Linux-Stock/task_daily_update.py
