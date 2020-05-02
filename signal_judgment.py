@@ -44,14 +44,19 @@ df['SELL_signal'] = np.where((df['MACD_sell'].rolling(2, min_periods=2).sum()==-
 # del df["SELL_signal"]
 # df['porfix'] = df['MACD_bug'].rolling(2, min_periods=2).sum()
 df['porfit'] = df['BUY_signal'].cumsum()+df['SELL_signal'].cumsum()
-
+today = time.strftime("%Y%m%d", time.localtime())
+print 'today:%s'%today
 for i in df.to_dict('records'):
-    if i['BUY_signal'] < 0:
-        text = u'%s 买入: %s'%(i['trade_date'],ts_code)
-        email_to_me(text)
-    if i['SELL_signal'] > 0:
-        text = u'%s 卖出: %s'%(i['trade_date'],ts_code)
-        email_to_me(text)
+    print 'trade_date:%s'%i['trade_date']
+    if i['trade_date'] == today:
+        if i['BUY_signal'] < 0:
+            text = u'%s 买入: %s'%(i['trade_date'],ts_code)
+            email_to_me(text)
+        if i['SELL_signal'] > 0:
+            text = u'%s 卖出: %s'%(i['trade_date'],ts_code)
+            email_to_me(text)
+    else:
+        print "往期"
 
 
 # del df['MACD_bug']
