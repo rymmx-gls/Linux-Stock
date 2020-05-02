@@ -1,24 +1,32 @@
 # coding:utf8
+import datetime
 import time
-from settings import pro, engine_ts, session
-
-fields='exchange,cal_date,is_open,pretrade_date'
-# end_date=time.strftime("%Y%m%d", time.localtime())
-start_date = '20200420'
-end_date = '20200421'
-df = pro.trade_cal(exchange='', start_date=start_date, end_date=end_date, fields=fields, is_open='')
-df.to_sql('trade_cal', engine_ts, index=False, if_exists='replace', chunksize=5000)
-for i in df.itertuples():
-    exchange, cal_date, is_open, pretrade_date = i.exchange, i.cal_date, i.is_open, i.pretrade_date
-    sql = """
-    INSERT INTO `trade_cal` ( `exchange`, `cal_date`, `is_open`,`pretrade_date`)
-    SELECT  '{}','{}','{}','{}'
-    WHERE not exists (select `cal_date` from `trade_cal` where `cal_date` = '{}');
-    """.format(exchange,cal_date,is_open,pretrade_date,cal_date)
-    print sql
-
-    session.execute(sql)
+from lib.Common import outinfo, init_logger
+from settings import pro, cursor, conn
 
 
+def start():
+    end_date = time.strftime("%Y%m%d", time.localtime())
+    start_date = end_date
+    # start_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y%m%d')
+    # end_date = '20200421'
+    fields = 'exchange,cal_date,is_open,pretrade_date'
+    df = pro.trade_cal(start_date=start_date, end_date=end_date, fields=fields)
+    for i in df.to_dict('records'):
+        sql = """
+            INSERT INTO `trade_cal` ( `exchange`, `cal_date`, `is_open`,`pretrade_date`)
+            SELECT  '{}','{}','{}','{}'
+            WHERE not exists (select `cal_date` from `trade_cal` where `cal_date` = '{}');
+            """.format(i['exchange'], i['cal_date'], i['is_open'], i['pretrade_date'], i['cal_date'])
+        cursor.execute(sql)
+        outinfo("insert %s success" % (i['cal_date']))
 
-    # print sql
+    cursor.close()
+    conn.close()
+
+
+if __name__ == '__main__':
+    init_logger("task_trade_cal_update")
+    outinfo("start task_trade_cal_update.py")
+    start()
+    outinfo("end task_trade_cal_update.py")
