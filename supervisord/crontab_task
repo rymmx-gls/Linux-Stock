@@ -22,6 +22,6 @@
 # task_weekly_update.py 交易日每周五16:30:00
 30 16 * * 5 /root/anaconda2/bin/python /root/src/Linux-Stock/task_weekly_update.py
 
-# task_weekly_update.py 交易日每月一号 00:00:00
+# task_monthly_update.py 交易日每月一号 00:00:00
 0 0 1 * * /root/anaconda2/bin/python /root/src/Linux-Stock/task_monthly_update.py
 
