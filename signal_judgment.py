@@ -1,4 +1,4 @@
-# coding:utf8
+# -*- coding: utf-8 -*-
 import time
 
 import numpy as np
@@ -8,8 +8,9 @@ from lib.macd_rymmx import macd
 
 
 from settings import engine_ts
+from test_email import email_to_me
 
-ts_code = "000008.SZ"
+ts_code = "000001.SZ"
 
 
 sql = "select trade_date,close from `daily_{}` order by trade_date DESC limit 200;".format(ts_code)
@@ -37,24 +38,31 @@ del df['BAR']
 # 盈利情况
 df['BUY_signal'] = np.where((df['MACD_buy'].rolling(2, min_periods=2).sum()==1)&(df['MACD_buy']==1),-df.close,0)
 df['SELL_signal'] = np.where((df['MACD_sell'].rolling(2, min_periods=2).sum()==-1)&(df['MACD_sell']==-1),df.close,0)
-del df["MACD_buy"]
-del df["MACD_sell"]
+# del df["MACD_buy"]
+# del df["MACD_sell"]
 # del df["BUY_signal"]
 # del df["SELL_signal"]
 # df['porfix'] = df['MACD_bug'].rolling(2, min_periods=2).sum()
 df['porfit'] = df['BUY_signal'].cumsum()+df['SELL_signal'].cumsum()
 
+for i in df.to_dict('records'):
+    if i['BUY_signal'] < 0:
+        text = u'%s 买入: %s'%(i['trade_date'],ts_code)
+        email_to_me(text)
+    if i['SELL_signal'] > 0:
+        text = u'%s 卖出: %s'%(i['trade_date'],ts_code)
+        email_to_me(text)
 
 
 # del df['MACD_bug']
 # del df['MACD_sell']
 
 print df
-
-import matplotlib.pyplot as plt
-
-df.plot(x='trade_date', kind='line', figsize=(20,8), grid=True)
-plt.show()
+#
+# import matplotlib.pyplot as plt
+#
+# df.plot(x='trade_date', kind='line', figsize=(20,8), grid=True)
+# plt.show()
 
 # def jedg(df):
 #     if df['DIF'] - df['DEA']: return 1
@@ -86,14 +94,3 @@ plt.show()
 # plt.show()
 
 
-"""
-style=['line','line','line','line','line','line','line','line']
-"""
-
-"""
-4          0.005620       0.043541      0.049160
-3         -0.013345       0.040204      0.026859
-2         -0.017879       0.035735      0.017856
-1         -0.006708       0.034058      0.027350
-0          0.010546       0.036694      0.047241
-"""
