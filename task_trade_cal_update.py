@@ -7,12 +7,14 @@ from settings import pro, cursor, conn
 
 def start():
     end_date = time.strftime("%Y%m%d", time.localtime())
-    start_date = end_date
+    # start_date = end_date
+    start_date = '20200521'
     # start_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y%m%d')
     # end_date = '20200421'
     fields = 'exchange,cal_date,is_open,pretrade_date'
     df = pro.trade_cal(start_date=start_date, end_date=end_date, fields=fields)
-    for i in df.to_dict('records'):
+    # for i in df.to_dict('records'):
+    for index, i in df.iterrows():
         sql = """
             INSERT INTO `trade_cal` ( `exchange`, `cal_date`, `is_open`,`pretrade_date`)
             SELECT  '{}','{}','{}','{}'
